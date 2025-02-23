@@ -1,15 +1,15 @@
 # Copyright 2022 ByteDance Ltd. and/or its affiliates
-# SPDX-License-Identifier: MIT 
-# 
+# SPDX-License-Identifier: MIT
+#
 # @Author: Katerina Kosta, Andrew Shaw
 # @Date:   2021-05-21 11:48:11
 # @Last Modified by:   Katerina Kosta
 # @Last Modified time: 2022-08-29 14:20:10
 
 import argparse
-import logging
 import os
 import numpy as np
+from tqdm import tqdm
 from data_tools import (
     read_MIDI_file,
     align_and_quantise_notes,
@@ -24,10 +24,6 @@ from data_tools import (
     TimeSignature,
     maybe_raise_exception_for_time_signature,
 )
-
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 def compute_features(notes, key_signature, time_signature, include_melody_note_tag=True):
@@ -82,11 +78,17 @@ def main(opts):
     POP909_path = opts.input
     output_folder = opts.output
     os.makedirs(output_folder, exist_ok=True)
-    logger.info(f"Processing files in {POP909_path} and saving the features in {opts.output}")
+    print(f"Processing files in {POP909_path} and saving the features in {opts.output}")
 
-    for entry in [f for f in os.scandir(POP909_path) if not f.name.startswith(".")]:
+    files = [f for f in os.scandir(POP909_path) if not f.name.startswith(".")]
+
+    for entry in tqdm(files, desc="Processing files"):
         fpath = os.path.join(entry.path, entry.name + ".mid")
-        logger.info(f"Processing file: {fpath}")
+        if not os.path.exists(fpath):
+            tqdm.write(f"File {fpath} does not exist. Skipping it.")
+            continue
+
+        tqdm.write(f"Processing file: {fpath}")
         # read the score
         notes = read_MIDI_file(fpath)
 
@@ -96,10 +98,12 @@ def main(opts):
 
         key_sig = get_key_signature(fpath)
         key_sig_event = KeySignature(name=key_sig)
+        if key_sig is None:
+            continue
 
         numerator, is_exception = maybe_raise_exception_for_time_signature(fpath)
         if is_exception:
-            logger.info(f"Time signature numerator from data: {numerator}. Tagging it as '3/4'.")
+            tqdm.write(f"Time signature numerator from data: {numerator}. Tagging it as '3/4'.")
             time_sig_event = TimeSignature(name="3/4")
         else:
             time_sig_event = TimeSignature(name="4/4")

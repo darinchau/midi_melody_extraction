@@ -1,6 +1,6 @@
 # Copyright 2022 ByteDance Ltd. and/or its affiliates
-# SPDX-License-Identifier: MIT 
-# 
+# SPDX-License-Identifier: MIT
+#
 # @Author: Katerina Kosta
 # @Date:   2021-05-21 11:48:11
 # @Last Modified by:   Katerina Kosta
@@ -13,6 +13,7 @@ import os
 import glob
 import numpy as np
 import random
+from tqdm import tqdm
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -58,8 +59,9 @@ def main(opts):
     }
 
     data = []
-    for filename in data_split["train_files"] + data_split["valid_files"]:
-        logger.info(f"Processing file {filename}")
+    files = data_split["train_files"] + data_split["valid_files"]
+    for filename in tqdm(files, desc="Processing files"):
+        tqdm.write(f"Processing file {filename}")
         data.append(dict(np.load(filename, allow_pickle=True))["arr_0"])
     create_stats_dict(data, opts.output)
     with open(os.path.join(opts.output, "data_split.yaml"), "w") as f:

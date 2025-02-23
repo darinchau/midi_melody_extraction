@@ -1,6 +1,6 @@
 # Copyright 2022 ByteDance Ltd. and/or its affiliates
-# SPDX-License-Identifier: MIT 
-# 
+# SPDX-License-Identifier: MIT
+#
 # @Author: Katerina Kosta, Andrew Shaw, Gianluca Micchi
 # @Date:   2021-05-21 11:48:11
 # @Last Modified by:   Katerina Kosta
@@ -14,9 +14,11 @@ from miditoolkit.midi import containers as ct
 from collections import defaultdict
 import numpy as np
 import music21
-import logger
 from fractions import Fraction
 import copy
+import logging
+
+logger = logging.getLogger(__name__)
 
 sqvs_per_beat = 4  # number of semiquavers in a crochet
 major_scale_comp = np.array([0, 2, 4, 5, 7, 9, 11])
@@ -171,8 +173,9 @@ def infer_key_sig(fname):
         )
 
         return key
-    except:
-        logger.error("Impossible to infer the key")
+    except Exception:
+        # logger.error("Impossible to infer the key")
+        return None
 
 
 def get_key_signature(filepath):
@@ -182,7 +185,7 @@ def get_key_signature(filepath):
     estimation algorithm.
     """
     folder_path = os.path.dirname(filepath)
-    key_info = np.loadtxt(os.path.join(folder_path, "key_audio.txt"), dtype=np.str)
+    key_info = np.loadtxt(os.path.join(folder_path, "key_audio.txt"), dtype=str)
 
     if len(key_info.flatten()) == 3:
         _, _, key = key_info
