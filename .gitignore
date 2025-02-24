@@ -4,3 +4,4 @@ __pycache__/
 .venv
 processed_data
 yaml_files
+model_results

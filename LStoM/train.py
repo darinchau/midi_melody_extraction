@@ -223,7 +223,7 @@ def main(output_path, data_split_file, stats_config_file, verbose, output_filena
         if patience < 3:
 
             # Training step
-            for data in training_data:
+            for data in tqdm(training_data, desc=f"Training epoch {epoch}", leave=False):
                 data = data.to(device)
                 feat = data[:, :-1].to(device)
                 labels = data[:, -1].to(device)
