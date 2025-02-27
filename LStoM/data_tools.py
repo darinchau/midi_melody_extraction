@@ -173,7 +173,8 @@ def infer_key_sig(fname):
         )
 
         return key
-    except Exception:
+    except Exception as e:
+        print(e)
         # logger.error("Impossible to infer the key")
         return None
 

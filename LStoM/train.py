@@ -39,7 +39,7 @@ class LStoM(nn.Module):
         self.fc = nn.Linear(self.hidden_size * self.num_directions, self.output_dim)
 
     def forward(self, x):
-        device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+        device = torch.device("cpu")
         seq_len, batch_size = x.shape[0], x.shape[1]
 
         h_t, c_t = (
@@ -191,6 +191,8 @@ def main(output_path, data_split_file, stats_config_file, verbose, output_filena
 
     input_dim = feature_range  # how many features we feed into the network
 
+    print(input_dim)
+
     model = LStoM(input_dim, hidden_size=140, num_layers=6, bilstm=True)
     optimizer = torch.optim.Adam(model.parameters())
 
@@ -229,6 +231,7 @@ def main(output_path, data_split_file, stats_config_file, verbose, output_filena
                 labels = data[:, -1].to(device)
                 optimizer.zero_grad()
                 input_features = feat.permute([2, 0, 1])  # I want: [l, batch_size, no. of features]
+                print(input_features.shape)
                 preds = model(input_features)
                 preds = preds.squeeze().T
                 labels = labels.squeeze()

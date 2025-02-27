@@ -2,6 +2,8 @@ This repository contains a basic version of our code related to the model presen
 [A deep learning method for melody extraction from a polyphonic symbolic music representation](https://archives.ismir.net/ismir2022/paper/000091.pdf).
 The data corpus that it is based on can be found [here](https://github.com/music-x-lab/POP909-Dataset/tree/master/POP909).
 
+Note by Darin: This is maybe officially a dead end
+
 ```
 python -m venv .venv
 git submodule init
